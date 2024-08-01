@@ -1,26 +1,49 @@
 // landing screen
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
 
-const LandingScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Landing Screen of Mattr</Text>
-    </View>
-  );
-};
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-});
+//screens
+import ActivityScreen from './screens/activity_screen';
+import UserProfileScreen from './screens/user_profile_screen';
 
-export default LandingScreen;
+//screen names
+const activity ='Activity';
+const userProfile ='User Profile';
+
+const Tab= createBottomTabNavigator();
+
+export default function LandingScreen({navigation}){
+    return(
+        <NavigationContainer>
+            <Tab.Navigator
+            initialRouteName={activity}
+            screenOptions={({route})=>({
+                tabBarIcon:({focused,color,size}) => {
+                    let iconName;
+                    let rn=route.name;
+
+                    if(rn ===activity){
+                        iconName = focused ? 'compass':'compass-outline'
+                    }else if(rn ===userProfile){
+                        iconName =focused ? 'person':'person-outline'
+                    }
+
+                    return <Ionicons name = {iconName} size={size} color={color}/>
+                },
+                headerShown: false,
+            })}
+            tabBarOptions={{
+                activeTintColor: 'tomato', // Change this to the desired color for active icon
+                inactiveTintColor: 'gray', // Change this to the desired color for inactive icon
+              }}>
+
+               <Tab.Screen name = {activity} component ={ActivityScreen}/>
+               <Tab.Screen name = {userProfile} component ={UserProfileScreen}/>
+
+            </Tab.Navigator>
+        </NavigationContainer>
+    )
+}

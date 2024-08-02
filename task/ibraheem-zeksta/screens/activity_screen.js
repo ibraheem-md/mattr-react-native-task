@@ -59,27 +59,30 @@ const ActivityScreen = () => {
     return age;
   };
 
-  const handleViewPress = (userId) => {
-    navigation.navigate('OtherProfileScreen', { userId });
+  const handleViewPress = (userId, dob) => {
+    const age = calculateAge(dob); // Calculate the age using the date of birth
+    navigation.navigate('OtherProfileScreen', { userId, age });
   };
+  
 
-  const renderItem = ({ item }) => (
-    <View style={styles.userContainer}>
-      <Image source={{ uri: item.photos[0].path }} style={styles.avatar} />
-      <View style={styles.userInfo}>
-        <Text style={[textStyle.textBoldMedium, styles.userName]}>
-          {item.first_name} {item.last_name}, {calculateAge(item.dob)}
-        </Text>
-        <Text style={textStyle.textStyleForFilter}>{item.gender}</Text>
-      </View>
-      <View style={styles.userInfo}>
-        <Text style={textStyle.textBoldMedium}>{item.location.city}, {item.location.country}</Text>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={() => handleViewPress(item.id)}>
-        <Text style={styles.buttonText}>View Profile</Text>
-      </TouchableOpacity>
+const renderItem = ({ item }) => (
+  <View style={styles.userContainer}>
+    <Image source={{ uri: item.photos[0].path }} style={styles.avatar} />
+    <View style={styles.userInfo}>
+      <Text style={[textStyle.textBoldMedium, styles.userName]}>
+        {item.first_name} {item.last_name}, {calculateAge(item.dob)}
+      </Text>
+      <Text style={textStyle.textStyleForFilter}>{item.gender}</Text>
     </View>
-  );
+    <View style={styles.userInfo}>
+      <Text style={textStyle.textBoldMedium}>{item.location.city}, {item.location.country}</Text>
+    </View>
+    <TouchableOpacity style={styles.button} onPress={() => handleViewPress(item.id, item.dob)}>
+      <Text style={styles.buttonText}>View Profile</Text>
+    </TouchableOpacity>
+  </View>
+);
+
 
   return (
     <SafeAreaView style={containerStyle.centerContainer}>

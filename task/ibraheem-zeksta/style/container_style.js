@@ -15,7 +15,12 @@ const containerStyle = StyleSheet.create({
     justifyContent: 'flex-end',
     width: '100%',
     paddingHorizontal: 16,
-    
+  },
+  moveToLeftContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    width: '100%',
+    paddingHorizontal: 16,
   },
   centerButtonContainer: {
     flexDirection: 'row',

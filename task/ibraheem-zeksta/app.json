@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "MATTR-REACT-NATIVE",
+    "displayName": "MATTR-REACT-NATIVE",
     "slug": "MATTR-REACT-NATIVE",
     "version": "1.0.0",
     "orientation": "portrait",

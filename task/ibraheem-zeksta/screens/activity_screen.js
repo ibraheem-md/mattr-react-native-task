@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, SafeAreaView, FlatList, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import containerStyle from '../style/container_style';
 import textStyle from '../style/text_style';
@@ -32,8 +32,11 @@ const ActivityScreen = () => {
     return array;
   };
 
+  // Function to refresh users, excluding user ID 10
   const refreshUsers = (usersToShuffle) => {
-    let shuffledUsers = shuffleArray(usersToShuffle);
+    // Filter out user ID 10
+    let filteredUsers = usersToShuffle.filter(user => user.id !== 10);
+    let shuffledUsers = shuffleArray(filteredUsers);
     let newDisplayedUsers = shuffledUsers.slice(0, 5);
     setDisplayedUsers(newDisplayedUsers);
     setRemainingUsers(shuffledUsers.slice(5));
@@ -63,26 +66,24 @@ const ActivityScreen = () => {
     const age = calculateAge(dob); // Calculate the age using the date of birth
     navigation.navigate('OtherProfileScreen', { userId, age });
   };
-  
 
-const renderItem = ({ item }) => (
-  <View style={styles.userContainer}>
-    <Image source={{ uri: item.photos[0].path }} style={styles.avatar} />
-    <View style={styles.userInfo}>
-      <Text style={[textStyle.textBoldMedium, styles.userName]}>
-        {item.first_name} {item.last_name}, {calculateAge(item.dob)}
-      </Text>
-      <Text style={textStyle.textStyleForFilter}>{item.gender}</Text>
+  const renderItem = ({ item }) => (
+    <View style={styles.userContainer}>
+      <Image source={{ uri: item.photos[0].path }} style={styles.avatar} />
+      <View style={styles.userInfo}>
+        <Text style={[textStyle.textBoldMedium, styles.userName]}>
+          {item.first_name} {item.last_name}, {calculateAge(item.dob)}
+        </Text>
+        <Text style={textStyle.textStyleForFilter}>{item.gender}</Text>
+      </View>
+      <View style={styles.userInfo}>
+        <Text style={textStyle.textBoldMedium}>{item.location.city}, {item.location.country}</Text>
+      </View>
+      <TouchableOpacity style={styles.button} onPress={() => handleViewPress(item.id, item.dob)}>
+        <Text style={styles.buttonText}>View Profile</Text>
+      </TouchableOpacity>
     </View>
-    <View style={styles.userInfo}>
-      <Text style={textStyle.textBoldMedium}>{item.location.city}, {item.location.country}</Text>
-    </View>
-    <TouchableOpacity style={styles.button} onPress={() => handleViewPress(item.id, item.dob)}>
-      <Text style={styles.buttonText}>View Profile</Text>
-    </TouchableOpacity>
-  </View>
-);
-
+  );
 
   return (
     <SafeAreaView style={containerStyle.centerContainer}>
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    paddingVertical:3,
+    paddingVertical: 3,
     paddingHorizontal: 40,
     backgroundColor: 'tomato',
     borderRadius: 30,

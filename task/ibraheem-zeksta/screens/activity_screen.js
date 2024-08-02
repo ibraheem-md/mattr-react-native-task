@@ -11,18 +11,49 @@ const ActivityScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const genderFilter = route.params?.gender || null;
+  const ageRangeFilter = route.params?.ageRange || null;
+  const sortBy = route.params?.sortBy || null;
   const allUsersRef = useRef([]);
 
   useEffect(() => {
     fetch('https://ad5fd43ff3494e53ae90dfd8c03a23f9.api.mockbin.io')
       .then(response => response.json())
       .then(data => {
-        let filteredUsers = genderFilter ? data.filter(user => user.gender === genderFilter) : data;
+        let filteredUsers = data;
+
+        // Apply gender filter
+        if (genderFilter) {
+          filteredUsers = filteredUsers.filter(user => user.gender === genderFilter);
+        }
+
+        // Apply age range filter
+        if (ageRangeFilter) {
+          const [minAge, maxAge] = ageRangeFilter.replace(/[^0-9-]/g, '').split('-').map(Number);
+          filteredUsers = filteredUsers.filter(user => {
+            const dob = new Date(user.dob.split('/').reverse().join('-'));
+            const currentYear = new Date().getFullYear();
+            const age = currentYear - dob.getFullYear() - (new Date().getMonth() < dob.getMonth() || (new Date().getMonth() === dob.getMonth() && new Date().getDate() < dob.getDate()) ? 1 : 0);
+            return (minAge ? age >= minAge : true) && (maxAge ? age <= maxAge : true);
+          });
+        }
+
+        // Apply sorting
+        if (sortBy) {
+          filteredUsers.sort((a, b) => {
+            if (sortBy === 'score') {
+              return b.score - a.score;
+            } else if (sortBy === 'date_joined') {
+              return new Date(b.created_at) - new Date(a.created_at);
+            }
+            return 0;
+          });
+        }
+
         allUsersRef.current = filteredUsers;
         refreshUsers(filteredUsers);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [genderFilter]);
+  }, [genderFilter, ageRangeFilter, sortBy]);
 
   const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -32,9 +63,8 @@ const ActivityScreen = () => {
     return array;
   };
 
-  // Function to refresh users, excluding user ID 10
+  // Function to refresh users, excluding user ID 10 assuming user id 10 is the user
   const refreshUsers = (usersToShuffle) => {
-    // Filter out user ID 10
     let filteredUsers = usersToShuffle.filter(user => user.id !== 10);
     let shuffledUsers = shuffleArray(filteredUsers);
     let newDisplayedUsers = shuffledUsers.slice(0, 5);
@@ -63,7 +93,7 @@ const ActivityScreen = () => {
   };
 
   const handleViewPress = (userId, dob) => {
-    const age = calculateAge(dob); // Calculate the age using the date of birth
+    const age = calculateAge(dob);
     navigation.navigate('OtherProfileScreen', { userId, age });
   };
 
@@ -143,7 +173,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'tomato',
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: 'tomato', // Red border for most buttons
+    borderColor: 'tomato',
   },
   buttonText: {
     color: '#fff',
@@ -151,7 +181,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   noBorder: {
-    borderColor: 'transparent', // No border for the Filter button
+    borderColor: 'transparent',
+  },
+  textStyle: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  textStyleForFilter: {
+    fontSize: 18,
+    color: '#007BFF',
   },
 });
 

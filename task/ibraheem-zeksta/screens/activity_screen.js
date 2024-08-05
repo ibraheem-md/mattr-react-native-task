@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     fontSize: 16,
-    color: '#fff',
+    color: 'tomato',
   },
   textStyleForFilter: {
     fontSize: 18,
